@@ -1,0 +1,91 @@
+{
+  "theme": "light",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "typography": {
+    "heading_font": "Chivo",
+    "body_font": "IBM Plex Sans",
+    "scales": {
+      "h1": "text-4xl sm:text-5xl tracking-tight font-black",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-bold",
+      "h3": "text-xl sm:text-2xl tracking-tight font-bold",
+      "body": "text-base leading-relaxed",
+      "small_label": "text-xs tracking-[0.2em] uppercase font-bold"
+    }
+  },
+  "colors": {
+    "light": {
+      "background": "#F9FAFB",
+      "surface": "#FFFFFF",
+      "border": "#E5E7EB",
+      "text_primary": "#111827",
+      "text_secondary": "#4B5563"
+    },
+    "dark": {
+      "background": "#0A0A0A",
+      "surface": "#141414",
+      "border": "#27272A",
+      "text_primary": "#F9FAFB",
+      "text_secondary": "#A1A1AA"
+    },
+    "accents": {
+      "primary": "#0055FF",
+      "primary_hover": "#0043CC",
+      "warning": "#FFB020",
+      "success": "#00C48C",
+      "critical": "#FF3B30"
+    }
+  },
+  "layout": {
+    "grid_system": "Control Room Mode",
+    "structure": "Side panel (md:w-96 or md:w-[400px]) for inputs/results + Main area for Mapbox map",
+    "spacing_scale": "Tailwind spacing, heavy use of p-4 to p-6 for dashboard cards, gap-4 for bento layouts.",
+    "border_radius": "rounded-none or minimal rounded-md (max 6px) to maintain Swiss technical feel"
+  },
+  "surfaces": {
+    "map_overlays": "Crystal Glassmorphism: backdrop-blur-xl bg-white/70 (light) or bg-black/60 (dark), with 1px border-white/20",
+    "cards": "Flat solid background, 1px border (border-border), no soft shadows. Sharp and technical.",
+    "buttons": "Solid primary color or outline with 1px border. Hover states should increase contrast."
+  },
+  "motion": {
+    "hover_states": "-translate-y-0.5 transition-transform duration-200",
+    "page_transitions": "opacity fade-in duration-300",
+    "chart_animations": "Smooth drawing effect for energy consumption line/area chart"
+  },
+  "components": {
+    "map": "Mapbox GL JS with interactive markers and geojson line layer for route",
+    "trip_input_form": "Shadcn UI forms, customized for high contrast. Sharp edges.",
+    "energy_chart": "Recharts AreaChart or LineChart with gradient under line",
+    "dark_mode_toggle": "Minimalist icon toggle, fixed in top right or inside side panel header"
+  },
+  "media": {
+    "image_urls": {
+      "empty_state_bg": {
+        "url": "https://images.unsplash.com/photo-1759269834665-2b401eb4d6f4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHwzfHx0b3BvZ3JhcGhpYyUyMG1hcCUyMGFic3RyYWN0fGVufDB8fHx8MTc3NjA3NjY4OHww&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract black and white topographic lines pattern, used as a subtle background pattern for empty states or loading screens."
+      },
+      "ev_charging_hero": {
+        "url": "https://images.pexels.com/photos/24376862/pexels-photo-24376862.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "White electric car charging on an urban city street. Use this in onboarding modals, welcome screens or informational cards."
+      },
+      "ev_plug": {
+        "url": "https://images.unsplash.com/photo-1639302610362-4c86747e8680?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwzfHxlbGVjdHJpYyUyMHZlaGljbGUlMjBjaGFyZ2luZ3xlbnwwfHx8fDE3NzYwNzY2MDJ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Close up of EV plug. Can be used as a thumbnail for charging station suggestions."
+      }
+    }
+  },
+  "accessibility": {
+    "contrast_ratio": "APCA compliant. Text over map must have text-shadow or a solid background wrapper.",
+    "focus_states": "focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-2",
+    "testing_attributes": "All interactive elements must have data-testid attributes (e.g. data-testid='calculate-route-button')"
+  },
+  "instructions_to_main_agent": [
+    "Install Mapbox GL JS and Recharts. Set up map components properly.",
+    "Install @phosphor-icons/react for precise, technical iconography.",
+    "Create a responsive layout: Mobile is a bottom sheet or stacked over the map, Desktop is a fixed left side-panel with the map filling the rest of the screen.",
+    "The default theme should be light, but include a functional theme toggle that switches between Tailwind's dark and light modes.",
+    "Ensure map overlays and floating UI use the Crystal Glassmorphism style.",
+    "For the energy graph, use an area chart matching the primary brand color.",
+    "Alert the user visually (Warning Amber) if the arrival battery percentage drops below 20% in the trip dashboard.",
+    "Add 'data-testid' to all interactive inputs, buttons, and significant UI markers."
+  ]
+}
