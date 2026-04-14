@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { TrafficCone } from 'lucide-react';
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -8,6 +9,7 @@ export default function MapView({ tripResult, darkMode }) {
   const map = useRef(null);
   const markersRef = useRef([]);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [showTraffic, setShowTraffic] = useState(true);
 
   useEffect(() => {
     if (map.current) return;
@@ -22,7 +24,10 @@ export default function MapView({ tripResult, darkMode }) {
       attributionControl: false,
     });
     map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-    map.current.on('load', () => setMapLoaded(true));
+    map.current.on('load', () => {
+      setMapLoaded(true);
+      addTrafficLayer();
+    });
 
     return () => {
       if (map.current) {
@@ -32,6 +37,42 @@ export default function MapView({ tripResult, darkMode }) {
     };
   }, []);
 
+  function addTrafficLayer() {
+    if (!map.current) return;
+    // Add traffic source and layer
+    if (!map.current.getSource('mapbox-traffic')) {
+      map.current.addSource('mapbox-traffic', {
+        type: 'vector',
+        url: 'mapbox://mapbox.mapbox-traffic-v1'
+      });
+    }
+    
+    if (!map.current.getLayer('traffic-layer')) {
+      map.current.addLayer({
+        'id': 'traffic-layer',
+        'type': 'line',
+        'source': 'mapbox-traffic',
+        'source-layer': 'traffic',
+        'paint': {
+          'line-width': 2.0,
+          'line-color': [
+            'match',
+            ['get', 'congestion'],
+            'low', 'rgb(0, 220, 0)',
+            'moderate', 'rgb(255, 220, 0)',
+            'heavy', 'rgb(255, 50, 0)',
+            'severe', 'rgb(150, 0, 0)',
+            'rgba(0,0,0,0)' // Fallback for no data
+          ],
+          'line-opacity': 0.8
+        },
+        'layout': {
+          'visibility': showTraffic ? 'visible' : 'none'
+        }
+      });
+    }
+  }
+
   // Update map style on theme change
   useEffect(() => {
     if (!map.current) return;
@@ -40,6 +81,7 @@ export default function MapView({ tripResult, darkMode }) {
       : 'mapbox://styles/mapbox/light-v11';
     map.current.setStyle(style);
     map.current.once('style.load', () => {
+      addTrafficLayer();
       if (tripResult) {
         addRouteToMap(tripResult);
       }
@@ -51,6 +93,15 @@ export default function MapView({ tripResult, darkMode }) {
     if (!map.current || !mapLoaded || !tripResult) return;
     addRouteToMap(tripResult);
   }, [tripResult, mapLoaded]);
+
+  // Toggle traffic visibility
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+    const layer = map.current.getLayer('traffic-layer');
+    if (layer) {
+      map.current.setLayoutProperty('traffic-layer', 'visibility', showTraffic ? 'visible' : 'none');
+    }
+  }, [showTraffic, mapLoaded]);
 
   function addRouteToMap(result) {
     const m = map.current;
@@ -157,6 +208,24 @@ export default function MapView({ tripResult, darkMode }) {
 
   return (
     <div ref={mapContainer} className="w-full h-full" data-testid="mapbox-map">
+      {/* Traffic Toggle */}
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <button
+          onClick={() => setShowTraffic(!showTraffic)}
+          className={`w-10 h-10 rounded-md border flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 shadow-md ${
+            showTraffic ? 'bg-primary text-white border-primary' : 'bg-surface text-secondary border-border'
+          }`}
+          style={{
+            backgroundColor: showTraffic ? 'var(--primary)' : 'var(--surface)',
+            borderColor: showTraffic ? 'var(--primary)' : 'var(--border)',
+            color: showTraffic ? '#FFFFFF' : 'var(--text-secondary)'
+          }}
+          title={showTraffic ? 'Hide traffic' : 'Show traffic'}
+        >
+          <TrafficCone size={18} />
+        </button>
+      </div>
+
       {!tripResult && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <div className="glass-panel rounded-md px-6 py-4 text-center max-w-xs animate-fade-in">

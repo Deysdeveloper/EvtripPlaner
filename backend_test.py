@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class EVTripPlannerAPITester:
-    def __init__(self, base_url="https://96670476-6047-47a8-b482-a3d469e9dad4.preview.emergentagent.com"):
+    def __init__(self, base_url="http://localhost:8001"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -224,16 +224,18 @@ def main():
             print(f"      Error: {result['error']}")
     
     # Save results to file
-    with open('/app/test_reports/backend_api_results.json', 'w') as f:
-        json.dump({
-            'timestamp': datetime.now().isoformat(),
-            'total_tests': tester.tests_run,
-            'passed_tests': tester.tests_passed,
-            'success_rate': (tester.tests_passed/tester.tests_run)*100,
-            'test_details': tester.test_results
-        }, f, indent=2)
-    
-    print(f"\n💾 Results saved to /app/test_reports/backend_api_results.json")
+    try:
+        with open('test_reports/backend_api_results.json', 'w') as f:
+            json.dump({
+                'timestamp': datetime.now().isoformat(),
+                'total_tests': tester.tests_run,
+                'passed_tests': tester.tests_passed,
+                'success_rate': (tester.tests_passed/tester.tests_run)*100,
+                'test_details': tester.test_results
+            }, f, indent=2)
+        print(f"\n💾 Results saved to test_reports/backend_api_results.json")
+    except Exception as e:
+        print(f"\n⚠️ Could not save results to file: {e}")
     
     return 0 if tester.tests_passed == tester.tests_run else 1
 

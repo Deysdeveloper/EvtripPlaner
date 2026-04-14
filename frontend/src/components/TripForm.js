@@ -9,6 +9,8 @@ export default function TripForm({ onSubmit, loading, error }) {
     batteryCapacity: 40,
     efficiency: 0.15,
     initialCharge: 80,
+    drivingMode: 'normal',
+    optimization: 'time',
   });
 
   const [selectedPreset, setSelectedPreset] = useState(null);
@@ -56,10 +58,53 @@ export default function TripForm({ onSubmit, loading, error }) {
       {/* Vehicle Details */}
       <div className="space-y-3">
         <label className="text-[10px] tracking-[0.2em] uppercase font-bold block" style={{ color: 'var(--text-secondary)' }}>
-          Vehicle Specs
+          Vehicle Specs & Mode
         </label>
 
         <div className="grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2 p-1 rounded-md" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                {['eco', 'normal', 'sport'].map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, drivingMode: mode }))}
+                    className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-all ${
+                      form.drivingMode === mode ? 'bg-primary text-white shadow-sm' : 'text-secondary hover:bg-surface'
+                    }`}
+                    style={{
+                      color: form.drivingMode === mode ? '#FFFFFF' : 'var(--text-secondary)',
+                      backgroundColor: form.drivingMode === mode ? 'var(--primary)' : 'transparent'
+                    }}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2 p-1 rounded-md" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                {[
+                  { id: 'time', label: 'Optimize for Time' },
+                  { id: 'battery', label: 'Optimize for Battery' }
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setForm(prev => ({ ...prev, optimization: opt.id }))}
+                    className={`flex-1 py-1.5 text-[9px] font-bold uppercase tracking-wider rounded transition-all ${
+                      form.optimization === opt.id ? 'bg-indigo-500 text-white shadow-sm' : 'text-secondary hover:bg-surface'
+                    }`}
+                    style={{
+                      color: form.optimization === opt.id ? '#FFFFFF' : 'var(--text-secondary)',
+                      backgroundColor: form.optimization === opt.id ? '#6366F1' : 'transparent'
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
           <div>
             <div className="flex items-center gap-1.5 mb-1.5">
               <Battery size={13} style={{ color: 'var(--text-secondary)' }} />

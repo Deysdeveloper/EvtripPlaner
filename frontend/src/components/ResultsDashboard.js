@@ -1,18 +1,21 @@
 import React from 'react';
 import EnergyChart from './EnergyChart';
+import BatteryChart from './BatteryChart';
 import ChargingStops from './ChargingStops';
 import {
   ArrowLeft, Route, Clock, Thermometer, Wind,
-  Battery, BatteryWarning, Zap, AlertTriangle, CheckCircle2
+  Battery, BatteryWarning, Zap, AlertTriangle, CheckCircle2, ShieldCheck
 } from 'lucide-react';
 
 export default function ResultsDashboard({ result, onReset }) {
-  const isCritical = result.finalCharge < 0;
-  const isWarning = result.finalCharge >= 0 && result.finalCharge < 20;
+  const isCritical = result.finalCharge <= 0;
+  const isWarning = result.finalCharge > 0 && result.finalCharge < 20;
   const isGood = result.finalCharge >= 20;
 
   const statusColor = isCritical ? '#FF3B30' : isWarning ? '#FFB020' : '#00C48C';
   const StatusIcon = isCritical ? BatteryWarning : isWarning ? AlertTriangle : CheckCircle2;
+
+  const trafficColor = result.trafficLevel === 'heavy' ? '#FF3B30' : result.trafficLevel === 'moderate' ? '#FFB020' : '#00C48C';
 
   return (
     <div className="space-y-4 animate-fade-in" data-testid="results-dashboard">
@@ -29,25 +32,70 @@ export default function ResultsDashboard({ result, onReset }) {
 
       {/* Status Banner */}
       <div
-        className="p-4 rounded-md border flex items-center gap-3"
+        className="p-4 rounded-md border flex items-center justify-between gap-3"
         style={{ borderColor: statusColor, background: `${statusColor}10` }}
         data-testid="trip-status-banner"
       >
-        <StatusIcon size={22} style={{ color: statusColor }} />
-        <div>
-          <p className="text-sm font-bold" style={{ color: statusColor }}>
-            {isCritical
-              ? 'Charging Required'
-              : isWarning
-              ? 'Low Battery on Arrival'
-              : 'Trip Feasible'}
+        <div className="flex items-center gap-3">
+          <StatusIcon size={22} style={{ color: statusColor }} />
+          <div>
+            <p className="text-sm font-bold" style={{ color: statusColor }}>
+              {isCritical
+                ? 'Trip NOT Feasible'
+                : isWarning
+                ? 'Battery Low — charging recommended'
+                : 'Optimal Conditions'}
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+              {isCritical
+                ? 'Insufficient battery! You need to charge during this trip.'
+                : isWarning
+                ? `You'll arrive with only ${result.finalCharge}% charge.`
+                : `Trip is safe! You'll arrive with ${result.finalCharge}% charge.`}
+            </p>
+          </div>
+        </div>
+        <div className="text-right hidden sm:block">
+          <div className="flex items-center gap-1 justify-end text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+            <ShieldCheck size={12} />
+            {result.confidenceLevel}% Confidence
+          </div>
+          <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
+            <div className="h-full bg-primary" style={{ width: `${result.confidenceLevel}%` }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Weather Impact Card */}
+      <div className="p-3 rounded-md border flex items-center gap-3" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-500">
+           <Thermometer size={18} />
+        </div>
+        <div className="flex-1">
+          <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
+            Weather Impact
           </p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-            {isCritical
-              ? 'You need to charge during this trip.'
-              : isWarning
-              ? `You'll arrive with only ${result.finalCharge}% charge.`
-              : `You'll arrive with ${result.finalCharge}% charge.`}
+          <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+            {result.weatherImpact > 0 
+              ? `⚠️ ${result.temperature < 20 ? 'Cold' : 'Windy'} weather → +${result.weatherImpact}% energy usage`
+              : '✅ Weather conditions are optimal for range.'}
+          </p>
+        </div>
+      </div>
+
+      {/* Traffic Impact Card */}
+      <div className="p-3 rounded-md border flex items-center gap-3" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `${trafficColor}15`, color: trafficColor }}>
+           <Route size={18} />
+        </div>
+        <div className="flex-1">
+          <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
+            Traffic Impact
+          </p>
+          <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+            {result.trafficLevel !== 'low' 
+              ? `⚠️ ${result.trafficLevel.charAt(0).toUpperCase() + result.trafficLevel.slice(1)} traffic → +${result.trafficImpact} kWh energy usage`
+              : '✅ Traffic conditions are low; minimal range impact.'}
           </p>
         </div>
       </div>
@@ -113,6 +161,11 @@ export default function ResultsDashboard({ result, onReset }) {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Battery Chart */}
+      {result.batteryCurve && (
+        <BatteryChart curve={result.batteryCurve} />
       )}
 
       {/* Energy Chart */}
