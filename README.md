@@ -4,28 +4,37 @@ A smart route planning application for Electric Vehicles (EVs) that calculates t
 
 ## 🚀 Features
 
-- **Route Planning**: Calculate optimal routes between two locations using Mapbox.
-- **Energy Estimation**: Advanced energy consumption calculation based on:
+- **Advanced Route Planning**: Calculate optimal routes between two locations using Mapbox with live traffic considerations.
+- **Granular Energy Estimation**: Comprehensive energy consumption calculation based on:
     - Distance and EV efficiency.
-    - Real-time temperature (cold/cool weather impact).
-    - Wind speed and direction.
+    - **Live Traffic Impact**: Dynamic energy adjustment based on real-time congestion levels.
+    - **Elevation Impact**: Integrated Mapbox Tilequery API for uphill consumption and downhill regenerative braking.
+    - **Weather Impact**: Real-time temperature (cold/cool weather impact) and wind speed/direction.
+    - **Driving Modes**: Support for **Eco**, **Normal**, and **Sport** modes.
+    - **Optimization Toggles**: Choose between "Optimize for Time" or "Optimize for Battery".
 - **Charging Recommendations**: Automatically suggests charging stops if the destination is beyond the vehicle's current range.
-- **Interactive Map**: Visualize the route, start/end points, and suggested charging stops.
-- **Real-time Weather**: Integrates OpenWeather API to provide weather data for the route.
-- **Dark/Light Mode**: User-friendly interface with theme toggling.
+- **Visual Dashboards**:
+    - **Energy Breakdown**: Detailed chart showing base consumption, drag, elevation, traffic, and regen.
+    - **Battery Graph**: Visualize battery % over distance with smooth area charts.
+    - **Weather & Traffic Cards**: Explicitly see how conditions affect your range.
+- **Interactive Map**:
+    - **Live Traffic Overlay**: Toggleable traffic layers showing congestion levels (Green/Yellow/Red).
+    - **Route Visualization**: Start/end points, route line, and suggested charging stops.
+- **Indian EV Presets**: Quick selection for popular Indian EVs like Tata Nexon EV, MG Comet, BYD Atto 3, Mahindra XUV400, and more.
+- **Dark/Light Mode**: Fully responsive interface with theme toggling.
 
 ## 🛠️ Technologies Used
 
 ### Frontend
 - **React**: UI library.
-- **Mapbox GL JS**: Interactive maps and geocoding.
+- **Mapbox GL JS**: Interactive maps, geocoding, and traffic data.
 - **Lucide React**: Icon library.
-- **Recharts**: For energy breakdown visualization.
+- **Recharts**: For energy breakdown and battery curve visualization.
 - **Tailwind CSS**: Utility-first CSS framework for styling.
 
 ### Backend
 - **FastAPI**: Modern, fast Python web framework.
-- **Httpx**: For asynchronous HTTP requests to external APIs.
+- **Httpx**: For asynchronous HTTP requests to Mapbox and OpenWeather APIs.
 - **Pydantic**: Data validation and settings management.
 - **Python Dotenv**: Environment variable management.
 
