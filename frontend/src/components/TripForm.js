@@ -6,14 +6,19 @@ export default function TripForm({ onSubmit, loading, error }) {
   const [form, setForm] = useState({
     start: '',
     end: '',
-    batteryCapacity: 60,
+    batteryCapacity: 40,
     efficiency: 0.15,
     initialCharge: 80,
   });
 
+  const [selectedPreset, setSelectedPreset] = useState(null);
+
   const handleChange = (field) => (e) => {
     const value = e.target.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
     setForm((prev) => ({ ...prev, [field]: value }));
+    if (field === 'batteryCapacity' || field === 'efficiency') {
+      setSelectedPreset(null);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -156,22 +161,33 @@ export default function TripForm({ onSubmit, loading, error }) {
         <p className="text-[10px] tracking-[0.2em] uppercase font-bold mb-2" style={{ color: 'var(--text-secondary)' }}>
           Quick Presets
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 relative z-50">
           {[
-            { label: 'Tesla Model 3', cap: 60, eff: 0.15 },
-            { label: 'Nissan Leaf', cap: 40, eff: 0.17 },
-            { label: 'BMW iX', cap: 105, eff: 0.20 },
+            { label: 'Tata Nexon EV', cap: 40, eff: 0.15 },
+            { label: 'Tata Tiago EV', cap: 24, eff: 0.12 },
+            { label: 'MG Comet EV', cap: 17, eff: 0.10 },
+            { label: 'Mahindra XUV400', cap: 39, eff: 0.16 },
+            { label: 'BYD Atto 3', cap: 60, eff: 0.15 },
+            { label: 'Hyundai Kona Electric', cap: 39, eff: 0.14 },
+            { label: 'Kia EV6', cap: 77, eff: 0.18 },
           ].map((preset) => (
             <button
               key={preset.label}
               type="button"
               data-testid={`preset-${preset.label.toLowerCase().replace(/\s+/g, '-')}`}
-              onClick={() => setForm((prev) => ({ ...prev, batteryCapacity: preset.cap, efficiency: preset.eff }))}
-              className="px-3 py-1.5 text-[11px] font-semibold rounded-md border transition-all duration-200 hover:-translate-y-0.5"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setForm((prev) => ({ ...prev, batteryCapacity: preset.cap, efficiency: preset.eff }));
+                setSelectedPreset(preset.label);
+              }}
+              className={`px-3 py-1.5 text-[11px] font-semibold rounded-md border transition-all duration-200 hover:-translate-y-0.5 relative z-50 cursor-pointer pointer-events-auto ${
+                selectedPreset === preset.label ? 'border-black' : ''
+              }`}
               style={{
-                borderColor: 'var(--border)',
-                color: 'var(--text-secondary)',
-                background: 'var(--surface)',
+                borderColor: selectedPreset === preset.label ? '#000000' : 'var(--border)',
+                color: selectedPreset === preset.label ? '#FFFFFF' : 'var(--text-secondary)',
+                background: selectedPreset === preset.label ? '#000000' : 'var(--surface)',
               }}
             >
               {preset.label}

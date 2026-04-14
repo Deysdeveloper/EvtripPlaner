@@ -124,6 +124,7 @@ export default function AddressAutocomplete({ value, onChange, placeholder, icon
             background: 'var(--surface)',
             borderColor: 'var(--border)',
             boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+            pointerEvents: 'auto',
           }}
           data-testid={`${testId}-suggestions`}
         >
